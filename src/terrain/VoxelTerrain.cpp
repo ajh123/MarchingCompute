@@ -6,6 +6,7 @@ VoxelMesh::VoxelMesh(MarchingCubesConfig mcConfig)
 
 	m_TriangleBuffer.BufferData(size1d, nullptr);
 	m_DensityBuffer.BufferData(size1d, nullptr);
+	m_ColorBuffer.BufferData(size1d, nullptr);
 
 	m_TriLUTBuffer.BufferData(256, triangleLUT);
 
@@ -17,7 +18,7 @@ VoxelMesh::VoxelMesh(MarchingCubesConfig mcConfig)
 
 	m_Material = std::make_shared<Material>(
 		Shader("shaders/MarchingCubes.vert", "shaders/MarchingCubes.frag"));
-	m_Material->SetUniform("objectColor", glm::vec3(1.0f, 0.65f, 0.0f));
+	// m_Material->SetUniform("objectColor", glm::vec3(1.0f, 0.65f, 0.0f));
 	m_Material->SetUniform("dirLight.direction", glm::vec3(0.5f, 1.0f, 0.2f));
 	m_Material->SetUniform("dirLight.ambient", glm::vec3(0.15f, 0.15f, 0.15f));
 	m_Material->SetUniform("dirLight.diffuse", glm::vec3(0.4f, 0.4f, 0.4f));
@@ -49,11 +50,36 @@ void VoxelMesh::Regenerate(MarchingCubesConfig mcConfig)
 	}
 	glUnmapBuffer(m_DensityBuffer.GetBufferType());
 
+	m_ColorBuffer.Bind();
+	glm::vec4 *colors = (glm::vec4 *) glMapBuffer(m_ColorBuffer.GetBufferType(),
+											 GL_WRITE_ONLY);
+	for (int x = 1; x < mcConfig.size.x - 1; ++x)
+	{
+		for (int y = 1; y < mcConfig.size.y - 1; ++y)
+		{
+			for (int z = 1; z < mcConfig.size.z - 1; ++z)
+			{
+				if (y == mcConfig.size.y - 2) {
+					colors[x + (y * mcConfig.size.x)
+						+ (z * mcConfig.size.x * mcConfig.size.y)] = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+				} else if (y > mcConfig.size.y - 4 && y < mcConfig.size.y - 2){
+					colors[x + (y * mcConfig.size.x)
+						+ (z * mcConfig.size.x * mcConfig.size.y)] = glm::vec4(1.0f, 0.65f, 0.0f, 1.0f);	
+				} else {
+					colors[x + (y * mcConfig.size.x)
+						+ (z * mcConfig.size.x * mcConfig.size.y)] = glm::vec4(0.65f, 0.65f, 0.65f, 1.0f);	
+				}
+			}
+		}
+	}
+	glUnmapBuffer(m_ColorBuffer.GetBufferType());
+
 	glBindBufferBase(m_TriangleBuffer.GetBufferType(), 4, m_TriangleBuffer.GetHandle());
 	glBindBufferBase(m_DensityBuffer.GetBufferType(), 5, m_DensityBuffer.GetHandle());
 	glBindBufferBase(m_AtomicCounter.GetBufferType(), 6, m_AtomicCounter.GetHandle());
 	glBindBufferBase(m_TriLUTBuffer.GetBufferType(), 7, m_TriLUTBuffer.GetHandle());
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 8, m_IndirectBuffer.GetHandle());
+	glBindBufferBase(m_ColorBuffer.GetBufferType(), 9, m_ColorBuffer.GetHandle());
 	m_VoxelCompute.Bind();
 	m_VoxelCompute.SetFloat("isoValue", mcConfig.isoValue);
 	glm::uvec3 dispatchSize(mcConfig.size.x / VOXEL_COMPUTE_LOCAL_SIZE,

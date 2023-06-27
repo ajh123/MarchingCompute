@@ -34,6 +34,7 @@ class VoxelMesh
 	// TODO: use glBufferStorage for SSBOs (maybe by inheriting from Buffer?)
 	using TriangleBuffer = Buffer<GL_SHADER_STORAGE_BUFFER, Triangle, GL_DYNAMIC_COPY>;
 	using FloatBuffer = Buffer<GL_SHADER_STORAGE_BUFFER, float, GL_DYNAMIC_DRAW>;
+	using ColorBuffer = Buffer<GL_SHADER_STORAGE_BUFFER, glm::vec4, GL_DYNAMIC_DRAW>;
 	using AtomicCounter = Buffer<GL_ATOMIC_COUNTER_BUFFER, unsigned, GL_DYNAMIC_DRAW>;
 	using TriLUTBuffer = Buffer<GL_SHADER_STORAGE_BUFFER, int[16], GL_STATIC_DRAW>;
 	using IndirectBuffer =
@@ -42,6 +43,7 @@ class VoxelMesh
 	TriangleBuffer m_TriangleBuffer;
 	AtomicCounter m_AtomicCounter;
 	FloatBuffer m_DensityBuffer;
+	ColorBuffer m_ColorBuffer;
 	TriLUTBuffer m_TriLUTBuffer;
 	IndirectBuffer m_IndirectBuffer;
 
