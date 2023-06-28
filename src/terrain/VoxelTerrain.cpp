@@ -18,7 +18,6 @@ VoxelMesh::VoxelMesh(MarchingCubesConfig mcConfig)
 
 	m_Material = std::make_shared<Material>(
 		Shader("shaders/MarchingCubes.vert", "shaders/MarchingCubes.frag"));
-	// m_Material->SetUniform("objectColor", glm::vec3(1.0f, 0.65f, 0.0f));
 	m_Material->SetUniform("dirLight.direction", glm::vec3(0.5f, 1.0f, 0.2f));
 	m_Material->SetUniform("dirLight.ambient", glm::vec3(0.15f, 0.15f, 0.15f));
 	m_Material->SetUniform("dirLight.diffuse", glm::vec3(0.4f, 0.4f, 0.4f));

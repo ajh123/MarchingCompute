@@ -33,19 +33,13 @@ uniform mat3 normalMat;
 
 void main()
 {
-	// uvec3 computeDim = gl_NumWorkGroups * gl_WorkGroupSize;
-	
-	// uint idx =  gl_GlobalInvocationID.z * computeDim.x * computeDim.y +
-	// gl_GlobalInvocationID.y * computeDim.x +
-	// gl_GlobalInvocationID.x;
-	
 	Triangle tri = triangles[gl_VertexID / 3];
 	vec4 pos = tri.points[gl_VertexID % 3];
 	vec4 normal = tri.normals[gl_VertexID % 3];
 	
 	FragPos = vec3(model * pos);
 	Normal = mat3(transpose(inverse(model))) * normal.xyz;
-	objectColor = colors[tri.idx];//int(FragPos.x + FragPos.y + FragPos.z)];
+	objectColor = colors[tri.idx];
 	
 	gl_Position = projection * view * vec4(FragPos, 1.0);
 }

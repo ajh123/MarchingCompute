@@ -12,8 +12,6 @@ uniform struct DirLight {
 	vec3 diffuse;
 } dirLight;
 
-// uniform vec3 objectColor;
-
 void main()
 {
 	float diffuse = max(dot(normalize(Normal), -dirLight.direction), 0.0);
