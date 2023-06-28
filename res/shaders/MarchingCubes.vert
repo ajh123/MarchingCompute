@@ -10,6 +10,7 @@ struct Triangle
 {
 	vec4 points[3];
 	vec4 normals[3];
+	uint idx;
 };
 
 layout(std430, binding = 4) buffer TriangleBuffer
@@ -44,7 +45,7 @@ void main()
 	
 	FragPos = vec3(model * pos);
 	Normal = mat3(transpose(inverse(model))) * normal.xyz;
-	objectColor = colors[gl_VertexID / 4];//int(FragPos.x + FragPos.y + FragPos.z)];
+	objectColor = colors[tri.idx];//int(FragPos.x + FragPos.y + FragPos.z)];
 	
 	gl_Position = projection * view * vec4(FragPos, 1.0);
 }

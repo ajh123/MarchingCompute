@@ -53,16 +53,16 @@ void VoxelMesh::Regenerate(MarchingCubesConfig mcConfig)
 	m_ColorBuffer.Bind();
 	glm::vec4 *colors = (glm::vec4 *) glMapBuffer(m_ColorBuffer.GetBufferType(),
 											 GL_WRITE_ONLY);
-	for (int x = 1; x < mcConfig.size.x - 1; ++x)
+	for (int x = 0; x < mcConfig.size.x; ++x)
 	{
-		for (int y = 1; y < mcConfig.size.y - 1; ++y)
+		for (int y = 0; y < mcConfig.size.y - 1; ++y)
 		{
-			for (int z = 1; z < mcConfig.size.z - 1; ++z)
+			for (int z = 0; z < mcConfig.size.z; ++z)
 			{
 				if (y == mcConfig.size.y - 2) {
 					colors[x + (y * mcConfig.size.x)
 						+ (z * mcConfig.size.x * mcConfig.size.y)] = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
-				} else if (y > mcConfig.size.y - 4 && y < mcConfig.size.y - 2){
+				} else if (y > mcConfig.size.y - 8 && y < mcConfig.size.y - 2){
 					colors[x + (y * mcConfig.size.x)
 						+ (z * mcConfig.size.x * mcConfig.size.y)] = glm::vec4(1.0f, 0.65f, 0.0f, 1.0f);	
 				} else {

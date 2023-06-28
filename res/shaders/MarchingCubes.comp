@@ -9,6 +9,7 @@ struct Triangle
 {
 	vec4 points[3];
 	vec4 normals[3];
+	uint idx;
 };
 
 layout(std430, binding = 4) writeonly buffer TriangleBuffer
@@ -107,6 +108,7 @@ void main()
 		tri.normals[0] = vec4(normal, 1.0);
 		tri.normals[1] = vec4(normal, 1.0);
 		tri.normals[2] = vec4(normal, 1.0);
+		tri.idx = idx;
 		
 		triangles[atomicCounterIncrement(TriCounter)] = tri;
 	}

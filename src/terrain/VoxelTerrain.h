@@ -21,6 +21,7 @@ class VoxelMesh
 	{
 		glm::vec4 points[3];
 		glm::vec4 normals[3];
+		unsigned int idx;
 	};
 
 	struct DrawArraysIndirectCommand
