@@ -10,9 +10,22 @@ struct MarchingCubesConfig
 	using DensityFunc = std::function<float(glm::vec3)>;
 
 	glm::ivec3 size{100};
+	int chunkSize = 10;
 	float scale = 1.0f;
 	float isoValue = 0.0f;
 	DensityFunc densityFunc;
+};
+
+struct VoxelType
+{
+	glm::vec4 color;
+};
+
+
+struct Voxel
+{
+	float density;
+	VoxelType type;
 };
 
 class VoxelMesh

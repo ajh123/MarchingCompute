@@ -33,16 +33,14 @@ void VoxelMesh::Regenerate(MarchingCubesConfig mcConfig)
 	m_AtomicCounter.BufferData(1, &counter);
 
 	m_DensityBuffer.Bind();
-	float *densities = (float *) glMapBuffer(m_DensityBuffer.GetBufferType(),
-											 GL_WRITE_ONLY);
+	float *densities = (float *) glMapBuffer(m_DensityBuffer.GetBufferType(), GL_WRITE_ONLY);
 	for (int x = 1; x < mcConfig.size.x - 1; ++x)
 	{
 		for (int y = 1; y < mcConfig.size.y - 1; ++y)
 		{
 			for (int z = 1; z < mcConfig.size.z - 1; ++z)
 			{
-				densities[x + (y * mcConfig.size.x)
-						  + (z * mcConfig.size.x * mcConfig.size.y)] =
+				densities[x + (y * mcConfig.size.x) + (z * mcConfig.size.x * mcConfig.size.y)] =
 					mcConfig.densityFunc(glm::vec3(x, y, z));
 			}
 		}
@@ -50,23 +48,20 @@ void VoxelMesh::Regenerate(MarchingCubesConfig mcConfig)
 	glUnmapBuffer(m_DensityBuffer.GetBufferType());
 
 	m_ColorBuffer.Bind();
-	glm::vec4 *colors = (glm::vec4 *) glMapBuffer(m_ColorBuffer.GetBufferType(),
-											 GL_WRITE_ONLY);
+	glm::vec4 *colors = (glm::vec4 *) glMapBuffer(m_ColorBuffer.GetBufferType(), GL_WRITE_ONLY);
 	for (int x = 0; x < mcConfig.size.x; ++x)
 	{
 		for (int y = 0; y < mcConfig.size.y - 1; ++y)
 		{
 			for (int z = 0; z < mcConfig.size.z; ++z)
 			{
+				int index = x + (y * mcConfig.size.x) + (z * mcConfig.size.x * mcConfig.size.y);
 				if (y == mcConfig.size.y - 2) {
-					colors[x + (y * mcConfig.size.x)
-						+ (z * mcConfig.size.x * mcConfig.size.y)] = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+					colors[index] = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
 				} else if (y > mcConfig.size.y - 8 && y < mcConfig.size.y - 2){
-					colors[x + (y * mcConfig.size.x)
-						+ (z * mcConfig.size.x * mcConfig.size.y)] = glm::vec4(1.0f, 0.65f, 0.0f, 1.0f);	
+					colors[index] = glm::vec4(1.0f, 0.65f, 0.0f, 1.0f);	
 				} else {
-					colors[x + (y * mcConfig.size.x)
-						+ (z * mcConfig.size.x * mcConfig.size.y)] = glm::vec4(0.65f, 0.65f, 0.65f, 1.0f);	
+					colors[index] = glm::vec4(0.65f, 0.65f, 0.65f, 1.0f);	
 				}
 			}
 		}
