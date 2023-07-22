@@ -1,8 +1,10 @@
 #include "VoxelTerrain.h"
+#include "VoxelType.h"
 
-VoxelMesh::VoxelMesh(MarchingCubesConfig mcConfig)
+VoxelMesh::VoxelMesh(MarchingCubesConfig mcConfig, glm::ivec3 chunkPosition)
 {
-	unsigned int size1d = mcConfig.size.x * mcConfig.size.y * mcConfig.size.z;
+	this->position = chunkPosition;
+	unsigned int size1d = CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE;
 
 	m_TriangleBuffer.BufferData(size1d, nullptr);
 	m_DensityBuffer.BufferData(size1d, nullptr);
@@ -27,21 +29,26 @@ void VoxelMesh::Regenerate(MarchingCubesConfig mcConfig)
 {
 	m_Scale = mcConfig.scale;
 
-	unsigned int size1d = mcConfig.size.x * mcConfig.size.y * mcConfig.size.z;
+	unsigned int size1d = CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE;
 
 	unsigned int counter = 0;
 	m_AtomicCounter.BufferData(1, &counter);
 
 	m_DensityBuffer.Bind();
 	float *densities = (float *) glMapBuffer(m_DensityBuffer.GetBufferType(), GL_WRITE_ONLY);
-	for (int x = 1; x < mcConfig.size.x - 1; ++x)
+	for (int x = 1; x < CHUNK_SIZE - 1; ++x)
 	{
-		for (int y = 1; y < mcConfig.size.y - 1; ++y)
+		for (int y = 1; y < CHUNK_SIZE - 1; ++y)
 		{
-			for (int z = 1; z < mcConfig.size.z - 1; ++z)
+			for (int z = 1; z < CHUNK_SIZE - 1; ++z)
 			{
-				densities[x + (y * mcConfig.size.x) + (z * mcConfig.size.x * mcConfig.size.y)] =
-					mcConfig.densityFunc(glm::vec3(x, y, z));
+				densities[x + (y * CHUNK_SIZE) + (z * CHUNK_SIZE * CHUNK_SIZE)] =
+					// mcConfig.densityFunc(glm::vec3(x, y, z));
+					mcConfig.densityFunc(glm::vec3(
+						x + this->position.x,
+						y + this->position.y,
+						z + this->position.z
+					));
 			}
 		}
 	}
@@ -49,19 +56,19 @@ void VoxelMesh::Regenerate(MarchingCubesConfig mcConfig)
 
 	m_ColorBuffer.Bind();
 	glm::vec4 *colors = (glm::vec4 *) glMapBuffer(m_ColorBuffer.GetBufferType(), GL_WRITE_ONLY);
-	for (int x = 0; x < mcConfig.size.x; ++x)
+	for (int x = 0; x < CHUNK_SIZE; ++x)
 	{
-		for (int y = 0; y < mcConfig.size.y - 1; ++y)
+		for (int y = 0; y < CHUNK_SIZE - 1; ++y)
 		{
-			for (int z = 0; z < mcConfig.size.z; ++z)
+			for (int z = 0; z < CHUNK_SIZE; ++z)
 			{
-				int index = x + (y * mcConfig.size.x) + (z * mcConfig.size.x * mcConfig.size.y);
-				if (y == mcConfig.size.y - 2) {
-					colors[index] = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
-				} else if (y > mcConfig.size.y - 8 && y < mcConfig.size.y - 2){
-					colors[index] = glm::vec4(1.0f, 0.65f, 0.0f, 1.0f);	
+				int index = x + (y * CHUNK_SIZE) + (z * CHUNK_SIZE * CHUNK_SIZE);
+				if (y == CHUNK_SIZE - 2) {
+					colors[index] = GRASS.color;
+				} else if (y > CHUNK_SIZE - 8 && y < CHUNK_SIZE - 2){
+					colors[index] = DIRT.color;	
 				} else {
-					colors[index] = glm::vec4(0.65f, 0.65f, 0.65f, 1.0f);	
+					colors[index] = STONE.color;	
 				}
 			}
 		}
@@ -76,9 +83,9 @@ void VoxelMesh::Regenerate(MarchingCubesConfig mcConfig)
 	glBindBufferBase(m_ColorBuffer.GetBufferType(), 9, m_ColorBuffer.GetHandle());
 	m_VoxelCompute.Bind();
 	m_VoxelCompute.SetFloat("isoValue", mcConfig.isoValue);
-	glm::uvec3 dispatchSize(mcConfig.size.x / VOXEL_COMPUTE_LOCAL_SIZE,
-							mcConfig.size.y / VOXEL_COMPUTE_LOCAL_SIZE,
-							mcConfig.size.z / VOXEL_COMPUTE_LOCAL_SIZE);
+	glm::uvec3 dispatchSize(CHUNK_SIZE / VOXEL_COMPUTE_LOCAL_SIZE,
+							CHUNK_SIZE / VOXEL_COMPUTE_LOCAL_SIZE,
+							CHUNK_SIZE / VOXEL_COMPUTE_LOCAL_SIZE);
 	glDispatchCompute(dispatchSize.x, dispatchSize.y, dispatchSize.z);
 
 	m_IndirectCounter.Bind();
@@ -91,6 +98,8 @@ void VoxelMesh::Draw(glm::mat4 model)
 
 	m_Material->Bind();
 	m_Material->SetUniform("model", model);
+	m_Material->SetUniform("chunkPosition", position);
+	m_Material->SetUniform("chunkSize", CHUNK_SIZE);
 
 	m_TriangleBuffer.Bind();
 	m_IndirectBuffer.Bind();

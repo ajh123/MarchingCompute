@@ -31,6 +31,9 @@ uniform mat4 model = mat4(1.0f);
 
 uniform mat3 normalMat;
 
+uniform int chunkSize;
+uniform ivec3 chunkPosition;
+
 void main()
 {
 	Triangle tri = triangles[gl_VertexID / 3];
@@ -41,5 +44,6 @@ void main()
 	Normal = mat3(transpose(inverse(model))) * normal.xyz;
 	objectColor = colors[tri.idx];
 	
-	gl_Position = projection * view * vec4(FragPos, 1.0);
+	vec4 position = (projection * view * vec4(FragPos, 1.0));// + vec4(chunkPosition * chunkSize, 0) * 10;
+	gl_Position = position;
 }

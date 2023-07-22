@@ -2,6 +2,11 @@
 
 #include "terrain/VoxelTerrain.h"
 
+typedef struct VoxelType
+{
+	glm::vec4 color;
+} VoxelType;
+
 VoxelType GRASS = {
 	glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)
 };

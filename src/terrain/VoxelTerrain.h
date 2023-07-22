@@ -5,31 +5,22 @@
 
 #define VOXEL_COMPUTE_LOCAL_SIZE 10
 
+#define CHUNK_SIZE 100
+
 struct MarchingCubesConfig
 {
 	using DensityFunc = std::function<float(glm::vec3)>;
 
 	glm::ivec3 size{100};
-	int chunkSize = 10;
 	float scale = 1.0f;
 	float isoValue = 0.0f;
 	DensityFunc densityFunc;
 };
 
-struct VoxelType
-{
-	glm::vec4 color;
-};
-
-
-struct Voxel
-{
-	float density;
-	VoxelType type;
-};
-
 class VoxelMesh
 {
+	glm::ivec3 position;
+
 	struct Triangle
 	{
 		glm::vec4 points[3];
@@ -68,7 +59,7 @@ class VoxelMesh
 	float m_Scale;
 
 public:
-	VoxelMesh(MarchingCubesConfig mcConfig);
+	VoxelMesh(MarchingCubesConfig mcConfig, glm::ivec3 chunkPosition);
 
 	void Regenerate(MarchingCubesConfig mcConfig);
 
