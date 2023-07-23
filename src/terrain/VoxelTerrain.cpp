@@ -1,5 +1,4 @@
 #include "VoxelTerrain.h"
-#include "VoxelType.h"
 
 VoxelMesh::VoxelMesh(MarchingCubesConfig mcConfig, glm::ivec3 chunkPosition)
 {
@@ -43,11 +42,10 @@ void VoxelMesh::Regenerate(MarchingCubesConfig mcConfig)
 			for (int z = 1; z < CHUNK_SIZE - 1; ++z)
 			{
 				densities[x + (y * CHUNK_SIZE) + (z * CHUNK_SIZE * CHUNK_SIZE)] =
-					// mcConfig.densityFunc(glm::vec3(x, y, z));
 					mcConfig.densityFunc(glm::vec3(
-						x + this->position.x,
-						y + this->position.y,
-						z + this->position.z
+						(CHUNK_SIZE * this->position.x) + x,
+						(CHUNK_SIZE * this->position.y) + y,
+						(CHUNK_SIZE * this->position.z) + z
 					));
 			}
 		}
@@ -63,13 +61,11 @@ void VoxelMesh::Regenerate(MarchingCubesConfig mcConfig)
 			for (int z = 0; z < CHUNK_SIZE; ++z)
 			{
 				int index = x + (y * CHUNK_SIZE) + (z * CHUNK_SIZE * CHUNK_SIZE);
-				if (y == CHUNK_SIZE - 2) {
-					colors[index] = GRASS.color;
-				} else if (y > CHUNK_SIZE - 8 && y < CHUNK_SIZE - 2){
-					colors[index] = DIRT.color;	
-				} else {
-					colors[index] = STONE.color;	
-				}
+				colors[index] = mcConfig.typeFunc(glm::vec3(
+					(CHUNK_SIZE * this->position.x) + x,
+					(CHUNK_SIZE * this->position.y) + y,
+					(CHUNK_SIZE * this->position.z) + z
+				)).color;
 			}
 		}
 	}

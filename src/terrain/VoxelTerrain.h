@@ -1,7 +1,10 @@
 #pragma once
 
 #include <functional>
-#include "game/FirstPersonGame.h"
+#include "core/BaseGame.h"
+#include "core/Constants.h"
+#include "graphics/Camera.h"
+#include "VoxelType.h"
 
 #define VOXEL_COMPUTE_LOCAL_SIZE 10
 
@@ -10,11 +13,13 @@
 struct MarchingCubesConfig
 {
 	using DensityFunc = std::function<float(glm::vec3)>;
+	using TypeFunc = std::function<VoxelType(glm::vec3)>;
 
 	glm::ivec3 size{100};
 	float scale = 1.0f;
 	float isoValue = 0.0f;
 	DensityFunc densityFunc;
+	TypeFunc typeFunc;
 };
 
 class VoxelMesh

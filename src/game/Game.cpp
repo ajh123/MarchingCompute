@@ -38,8 +38,21 @@ public:
 	MarchingCubesGame(unsigned int width, unsigned int height, const std::string &title)
 		: FirstPersonGame(width, height, title)
 	{
-		m_TerrainConfig.densityFunc = [&](glm::vec3 pos)
-		{ return m_Noise.GetNoise(pos.x, pos.y, pos.z); };
+		m_TerrainConfig.densityFunc = [&](glm::vec3 pos) 
+		{ 
+			return m_Noise.GetNoise(pos.x, pos.y, pos.z);
+		};
+
+		m_TerrainConfig.typeFunc = [&](glm::vec3 pos) 
+		{ 
+			if (pos.y == CHUNK_SIZE - 2) {
+				return GRASS;
+			} else if (pos.y > CHUNK_SIZE - 8 && pos.y < CHUNK_SIZE - 2){
+				return DIRT;	
+			} else {
+				return STONE;	
+			};
+		};
 
 		m_Terrain = std::make_shared<VoxelMesh>(m_TerrainConfig, glm::ivec3(1, 0, 0));
 	}

@@ -1,20 +1,15 @@
 #pragma once
-
-#include "terrain/VoxelTerrain.h"
+#include "../core/BaseGame.h"
+#include "../core/Constants.h"
+#include "../graphics/Camera.h"
 
 typedef struct VoxelType
 {
 	glm::vec4 color;
 } VoxelType;
 
-VoxelType GRASS = {
-	glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)
-};
+extern VoxelType GRASS;
 
-VoxelType DIRT = {
-	glm::vec4(1.0f, 0.65f, 0.0f, 1.0f)
-};
+extern VoxelType DIRT;
 
-VoxelType STONE = {
-	glm::vec4(0.65f, 0.65f, 0.65f, 1.0f)
-};
+extern VoxelType STONE;
