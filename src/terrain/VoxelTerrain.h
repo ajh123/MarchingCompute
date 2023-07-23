@@ -63,7 +63,7 @@ public:
 
 	void Regenerate(MarchingCubesConfig mcConfig);
 
-	void Draw(glm::mat4 model);
+	void Draw();
 
 	inline std::shared_ptr<Material> GetMaterial() const { return m_Material; }
 };

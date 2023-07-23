@@ -92,14 +92,15 @@ void VoxelMesh::Regenerate(MarchingCubesConfig mcConfig)
 	glDispatchCompute(1, 1, 1);
 }
 
-void VoxelMesh::Draw(glm::mat4 model)
+void VoxelMesh::Draw()
 {
-	model = glm::scale(model, glm::vec3(m_Scale));
+	glm::mat4 model = glm::scale(
+		glm::translate(glm::mat4(1.0f), glm::vec3(this->position * CHUNK_SIZE)),
+		glm::vec3(m_Scale)
+	);
 
 	m_Material->Bind();
 	m_Material->SetUniform("model", model);
-	m_Material->SetUniform("chunkPosition", position);
-	m_Material->SetUniform("chunkSize", CHUNK_SIZE);
 
 	m_TriangleBuffer.Bind();
 	m_IndirectBuffer.Bind();

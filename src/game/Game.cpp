@@ -41,7 +41,7 @@ public:
 		m_TerrainConfig.densityFunc = [&](glm::vec3 pos)
 		{ return m_Noise.GetNoise(pos.x, pos.y, pos.z); };
 
-		m_Terrain = std::make_shared<VoxelMesh>(m_TerrainConfig, glm::ivec3(0, 0, 0));
+		m_Terrain = std::make_shared<VoxelMesh>(m_TerrainConfig, glm::ivec3(1, 0, 0));
 	}
 
 	void Update(float delta) override
@@ -69,8 +69,7 @@ private:
 
 	void DrawMeshes()
 	{
-		m_Terrain->Draw(
-			glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)));
+		m_Terrain->Draw();
 	}
 
 	void ShowStats()
